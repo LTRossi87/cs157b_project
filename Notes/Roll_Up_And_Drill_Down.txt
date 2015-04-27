@@ -1,0 +1,72 @@
+county -> city
+
+String  = “Store.$user_input”
+
+Select “String”
+From “String”
+Where “String”
+Group By “String”
+
+Drill - Up / Roll - Up
+Store:
+o	store_num
+o	address
+o	city
+o	county
+o	zip	
+o	district
+o	state
+o	region
+o 	null --- > All stores [default]
+
+Product:
+o	description
+o	brand
+o	subcatagory
+o	catagory
+o	department
+o  	null --- > All Products [default]
+
+Time:
+o	date
+o	day of week
+o 	day number in month
+o 	week number in year
+o 	month
+o 	quarter
+o 	fiscal period
+o 	year
+o 	null --- > Covers all time [default]
+
+If all are null then show only sum($$$)
+
+
+Drill - Down / Roll - Down
+Store:
+[]	store_num
+[]	address
+[]	city
+[]	county
+[]	zip	
+[]	district
+[]	state
+[]	region
+
+Product:
+[]	description
+[]	brand
+[]	subcatagory
+[]	catagory
+[]	department
+
+Time:
+[]	date
+[]	day of week
+[] 	day number in month
+[] 	week number in year
+[] 	month
+[] 	quarter
+[] 	fiscal period
+[] 	year
+
+
