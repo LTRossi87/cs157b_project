@@ -1,0 +1,43 @@
+h1 {
+ font-family: cursive;
+ text-align: center;
+ height: 50px;
+ background-color: darkturquoise;
+ 
+}
+
+h3 {
+ font-family: cursive;
+ font-size: 30px;
+ background-color: darkturquoise;
+}
+
+p {
+ font-size: 30px;   
+ font-family: fantasy;
+}
+
+form {
+ padding-top: 30px;
+ font-family: fantasy;
+ font-size: 20px;
+}
+
+.op {
+ display: block;
+}
+
+.button {
+ text-align: center;
+ padding-top: 30px;
+}
+
+.section {
+ font-size: 30px; 
+ text-decoration: underline;
+}
+
+#na {
+ text-decoration: line-through;   
+}
+
