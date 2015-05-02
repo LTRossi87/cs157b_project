@@ -16,7 +16,7 @@
         <form action="redirect.php" method="post" class="form">
             <div class="row">
                 <div class="col-md-3" class="op">
-                    Roll-Up<input type="radio" name="op" value="rollup">
+                    Roll-Up<input type="radio" name="op" value="rollup" checked>
                 </div>
                 <div class="col-md-3" class="op">
                     Drill-Down<input type="radio" name="op" value="drilldown">
