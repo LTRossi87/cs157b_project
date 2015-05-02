@@ -14,7 +14,7 @@
                     <span class="section">Store: </span><br/>
                     <input type="radio" name="store" value="store_number" disabled><span id="na">Store#</span><br/> 
                     <input type="radio" name="store" value="store_street_address" disabled><span id="na">Address</span><br/>
-                    <input type="radio" name="store" value="city">City<br/>
+                    <input type="radio" name="store" value="city" checked>City<br/>
                     <input type="radio" name="store" value="store_county">County<br/>
                     <input type="radio" name="store" value="store_zip">Zip<br/>
                     <input type="radio" name="store" value="sales_district">District<br/>
@@ -27,7 +27,7 @@
                     <input type="radio" name="product" value="description" disabled><span id="na">Description</span><br/>
                     <input type="radio" name="product" value="brand" disabled><span id="na">Brand</span><br/>
                     <input type="radio" name="product" value="subcategory" disabled><span id="na">Subcategory</span><br/>
-                    <input type="radio" name="product" value="category">Category<br/>
+                    <input type="radio" name="product" value="category" checked>Category<br/>
                     <input type="radio" name="product" value="department">Department<br/>
                     <input type="radio" name="product" value="">None<br/>
                 </div>
@@ -36,7 +36,7 @@
                     <input type="radio" name="time" value="date" disabled><span id="na">Date</span><br/>
                     <input type="radio" name="time" value="day_of_week" disabled><span id="na">Day Of Week</span><br/>
                     <input type="radio" name="time" value="day_number_in_month" disabled><span id="na">Day Number in Month</span><br/>
-                    <input type="radio" name="time" value="week_number_in_year">Week Number in Year<br/>
+                    <input type="radio" name="time" value="week_number_in_year" checked>Week Number in Year<br/>
                     <input type="radio" name="time" value="Month">Month<br/>
                     <input type="radio" name="time" value="quarter">Quarter<br/>
                     <input type="radio" name="time" value="fiscal_period">Fiscal Period<br/>
