@@ -10,6 +10,7 @@ global $selectStringStore;
 global $selectStringProd;
 global $selectStringTime;
 global $selectStringFull;
+global $query;
 
 //if 1 dimension is not selected then that there is extra ,
 if(!empty($storeAttr)) {
@@ -38,7 +39,21 @@ foreach ($selectStringTime as $attributes) {
 
 //check if select statement will be empty
 if(empty($selectStringStore) and empty($selectStringProd) and empty($selectStringTime)) {
-    echo "You did not select anything!";
+    //show the base cube
+    $query = "SELECT `Store`.city, `Product`.category, `Time`.week_number_in_year, sum(dollar_sales) 
+                FROM 
+                      Grocery.`Sales_Fact`,
+                      Grocery.`Product`,
+                      Grocery.`Store`,
+                      Grocery.`Promotion`,
+                      Grocery.`Time`
+                WHERE
+                      `Sales_Fact`.product_key = `Product`.product_key and
+                      `Sales_Fact`.store_key = `Store`.store_key and
+                      `Sales_Fact`.promotion_key = `Promotion`.promotion_key and
+                      `Sales_Fact`.time_key = `Time`.time_key
+                GROUP BY
+                     `Store`.city, `Product`.category, `Time`.week_number_in_year;";
 }
 
 else {
@@ -55,18 +70,18 @@ $selectStringFull = array($selectStringStore, $selectStringProd, $selectStringTi
 
     $selectquery = "SELECT " . $selectStringFull . ", sum(dollar_sales)";
 
-    $fromquery = " FROM Sales_Fact, Product, Store, Promotion, Time";
+    $fromquery = " FROM Sales_Fact, Product, Store, Time";
 
     $wherequery = " WHERE Sales_Fact.product_key = Product.product_key AND
                           Sales_Fact.store_key = Store.store_key AND
-                          Sales_Fact.promotion_key = Promotion.promotion_key AND
                           Sales_Fact.time_key = Time.time_key";
 
     $groupbyquery = " GROUP BY " . $selectStringFull;
 
     $query = $selectquery . $fromquery . $wherequery . $groupbyquery;
+}
 
-//    echo $query;
+//echo $query;
 
     $result = db_query($query);
     while($row = mysqli_fetch_assoc($result)) {
@@ -77,6 +92,5 @@ $selectStringFull = array($selectStringStore, $selectStringProd, $selectStringTi
 
 
     mysqli_close();
-}
 
 ?>
