@@ -8,50 +8,79 @@ $timeAttr = $_POST["time"];
 
 global $selectString;
 global $fromString;
+global $fromWhere;
 
 if(!empty($storeAttr)) {
    $selectString[] = $storeAttr;
    $fromString[] = "Store";
+   $fromWhere[] = "Sales_Fact.store_key = Store.store_key";
 }
 
 if(!empty($prodAttr)) {
     $selectString[] = $prodAttr;
-    $fromString[] = Product;
+    $fromString[] = "Product";
+    $fromWhere[] = "Sales_Fact.product_key = Product.product_key";
 }
 
 if(!empty($timeAttr)) {
     $selectString[] = $timeAttr;
-    $fromString[] = Time;
+    $fromString[] = "Time";
+    $fromWhere[] = "Sales_Fact.time_key = Time.time_key";
 }
+
+//echo $selectString . "er";
+
+//print_r($fromWhere);
 
 //check if the select is empty
 if(empty($selectString)) {
     //handle if none is select for all dimensions
     //handle from string   
+    
+    //only sum from
+    $selectquery = "SELECT sum(dollar_sales)";
+
+    $fromquery = " FROM Sales_Fact";
+
+    $query = $selectquery . $fromquery;
+
 }
 
-foreach ($selectString as $attributes) {
-    $selectString = implode(", ", $selectString);
+else {
+    foreach ($selectString as $attributes) {
+        $selectString = implode(", ", $selectString);
+    }
+
+    foreach ($fromString as $dimensions) {
+        $fromString = implode(", ", $fromString);
+    }
+
+
+    $selectquery = "SELECT " . $selectString . ", sum(dollar_sales)";
+
+    $fromquery = " FROM " . $fromString . ", Sales_Fact ";
+        
+    
+    $fromTemp = "";
+    for($i = 0; $i < sizeof($fromWhere) - 1; $i++) {          
+        $fromTemp = $fromTemp . $fromWhere[$i] . " AND ";
+        
+    }
+    
+    
+//    print_r($fromWhere);
+    
+    
+    $fromTemp = $fromTemp . $fromWhere[sizeof($fromWhere) - 1];
+    
+//   echo $fromTemp;
+
+    $wherequery = " WHERE " . $fromTemp;
+
+    $groupbyquery = " GROUP BY " . $selectString;
+
+    $query = $selectquery . $fromquery . $wherequery . $groupbyquery;
 }
-
-foreach ($fromString as $dimensions) {
-    $fromString = implode(", ", $fromString);
-}
-
-
-$selectquery = "SELECT " . $selectString . ", sum(dollar_sales)";
-
-$fromquery = " FROM Sales_Fact, Promotion, " . $fromString;
-
-
-$wherequery = " WHERE Sales_Fact.product_key = Product.product_key AND
-                      Sales_Fact.store_key = Store.store_key AND
-                      Sales_Fact.promotion_key = Promotion.promotion_key AND
-                      Sales_Fact.time_key = Time.time_key";
-
-$groupbyquery = " GROUP BY " . $selectString;
-
-$query = $selectquery . $fromquery . $wherequery . $groupbyquery;
 
 //echo $query;
 
