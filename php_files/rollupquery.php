@@ -7,17 +7,21 @@ $prodAttr = $_POST["product"];
 $timeAttr = $_POST["time"];
 
 global $selectString;
+global $fromString;
 
 if(!empty($storeAttr)) {
    $selectString[] = $storeAttr;
+   $fromString[] = "Store";
 }
 
 if(!empty($prodAttr)) {
     $selectString[] = $prodAttr;
+    $fromString[] = Product;
 }
 
 if(!empty($timeAttr)) {
     $selectString[] = $timeAttr;
+    $fromString[] = Time;
 }
 
 //check if the select is empty
@@ -30,10 +34,15 @@ foreach ($selectString as $attributes) {
     $selectString = implode(", ", $selectString);
 }
 
+foreach ($fromString as $dimensions) {
+    $fromString = implode(", ", $fromString);
+}
+
 
 $selectquery = "SELECT " . $selectString . ", sum(dollar_sales)";
 
-$fromquery = " FROM Sales_Fact, Product, Store, Promotion, Time";
+$fromquery = " FROM Sales_Fact, Promotion, " . $fromString;
+
 
 $wherequery = " WHERE Sales_Fact.product_key = Product.product_key AND
                       Sales_Fact.store_key = Store.store_key AND
@@ -43,6 +52,8 @@ $wherequery = " WHERE Sales_Fact.product_key = Product.product_key AND
 $groupbyquery = " GROUP BY " . $selectString;
 
 $query = $selectquery . $fromquery . $wherequery . $groupbyquery;
+
+//echo $query;
 
 $result = db_query($query);
 while($row = mysqli_fetch_assoc($result)) {
