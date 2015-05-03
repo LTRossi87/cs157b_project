@@ -89,7 +89,10 @@
                        <input type='checkbox' name='check_list1[]' value='Food' checked> Food<br/> 
                        <input type='checkbox' name='check_list1[]' value='Drinks'> Drinks<br/>
                        <input type='checkbox' name='check_list1[]' value='Supplies'> Supplies<br/>
-                       
+                       </div>
+
+                       <div class='col-md-4' id='store'>
+                       <br /><br />
                        <span class='button'> <input type='Submit'> </span>
                        </div>
                        </form>";
@@ -102,7 +105,10 @@
                     print "<input type='checkbox' name='check_list2[]' value=$i> $i<br/>"; 
                 }
 
-                print "<span class='button'> <input type='Submit'> </span>
+                print "</div>
+                       <div class='col-md-4' id='store'>
+                       <br /><br />
+                       <span class='button'> <input type='Submit'> </span>
                        </div>
                        </form>";
             }                    
