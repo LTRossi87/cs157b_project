@@ -23,7 +23,7 @@
 
 <?php 
     function createForm() {
-        echo '<p>Please select a dimension that you want to slice on:</p>;
+        echo '<p>Please select a dimension that you want to slice on:</p>
             <form action="slice.php" method="post" class="form">
                 <div class="row">
                 <div class="col-md-3" class="op">
