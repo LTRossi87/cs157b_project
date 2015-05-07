@@ -129,7 +129,9 @@
             }
             print  "<div>
                         <br /><br />
-                        <span class='button' align='center'> <input type='Submit'> </span>
+                            <div class='button'>
+                            <input type='Submit'>
+                            </div>
                     </div>
                     </form>";
     }

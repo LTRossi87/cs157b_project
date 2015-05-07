@@ -1,5 +1,6 @@
 <?php
 include "connection.php";
+include "format.php";
 
 global $query;
 $storeAttr = $_POST["check_list"];
@@ -79,13 +80,14 @@ if(!empty($slice)) {
     $query = base_cube();
 }
 
-echo $query;
+//echo $query;
 
 $result = db_query($query);
 while($row = mysqli_fetch_assoc($result)) {
     $json[] = $row;
 }
-echo json_encode($json);
+//echo json_encode($json);
+arrayTable($json);
 
 function base_cube() {
 return "SELECT `Store`.city, `Product`.category, `Time`.week_number_in_year, sum(dollar_sales) 
