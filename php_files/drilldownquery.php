@@ -1,6 +1,7 @@
 <?php
 
 include "connection.php";
+include "format.php";
 
 $storeAttr = $_POST["check_list"];
 $prodAttr = $_POST["check_list2"];
@@ -88,8 +89,8 @@ $selectStringFull = array($selectStringStore, $selectStringProd, $selectStringTi
         $json[] = $row;
     }
     
-    echo json_encode($json);
-
+//    echo json_encode($json);
+arrayTable($json);
 
     mysqli_close();
 
