@@ -1,6 +1,6 @@
 <?php
-
 include "connection.php";
+include "format.php";
 
 $storeAttr = $_POST["store"];
 $prodAttr = $_POST["product"];
@@ -9,6 +9,7 @@ $timeAttr = $_POST["time"];
 global $selectString;
 global $fromString;
 global $fromWhere;
+
 
 if(!empty($storeAttr)) {
    $selectString[] = $storeAttr;
@@ -38,7 +39,7 @@ if(empty($selectString)) {
     //handle from string   
     
     //only sum from
-    $selectquery = "SELECT sum(dollar_sales)";
+    $selectquery = "SELECT sum(dollar_sales) as total";
 
     $fromquery = " FROM Sales_Fact";
 
@@ -56,7 +57,7 @@ else {
     }
 
 
-    $selectquery = "SELECT " . $selectString . ", sum(dollar_sales)";
+    $selectquery = "SELECT " . $selectString . ", sum(dollar_sales) as total";
 
     $fromquery = " FROM " . $fromString . ", Sales_Fact ";
         
@@ -89,7 +90,9 @@ while($row = mysqli_fetch_assoc($result)) {
     $json[] = $row;
 }
 
-echo json_encode($json);
+//echo json_encode($json);
+//print_r($json);
+arrayTable($json);
 
 
 mysqli_close();
