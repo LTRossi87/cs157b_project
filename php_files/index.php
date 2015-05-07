@@ -1,3 +1,6 @@
+<?php
+    include "connection.php";
+?>
 <!DOCTYPE html>
 <html>
     <head>
@@ -32,6 +35,87 @@
                 <input type="Submit">
             </div> 
         </form>   
+        
+        
+        <div class="container-fluid">
+            <div id="basecubequery">
+<!--                <h5>Base Cube Query</h5>-->
+                <?php
+                    global $basequery;
+                    $basequery = "SELECT `Store`.city, `Product`.category, `Time`.week_number_in_year, sum(dollar_sales) as total
+                                FROM 
+                                  Grocery.`Sales_Fact`,
+                                  Grocery.`Product`,
+                                  Grocery.`Store`,
+                                  Grocery.`Promotion`,
+                                  Grocery.`Time`
+                                WHERE
+                                  `Sales_Fact`.product_key = `Product`.product_key and
+                                  `Sales_Fact`.store_key = `Store`.store_key and
+                                  `Sales_Fact`.promotion_key = `Promotion`.promotion_key and
+                                  `Sales_Fact`.time_key = `Time`.time_key
+                                GROUP BY
+                                 `Store`.city, `Product`.category, `Time`.week_number_in_year";
+//                        echo $basequery;
+                    ?>
+            </div>
+         </div>
+            <div class = "col-md-5" id="basecuberesults">
+                <h5>Base Cube Results</h5>
+                    <?php
+
+                      $result = db_query($basequery);
+                        while($row = mysqli_fetch_assoc($result)) {
+                            $json[] = $row;
+                        }
+                        $json = json_encode($json);
+
+                        $data = json_decode($json);
+    
+
+                        echo "<div class='scroll'>" . 
+                             "<table border=1>" . 
+                                "<tbody>" . 
+                                    "<tr>" .
+                                        "<th>" . 
+                                            "City" .
+                                        "</th>" .
+                                        "<th>" .
+                                            "Category" .
+                                        "</th>" .
+                                        "<th>" .
+                                            "Week Number in Year" .
+                                        "</th>" .
+                                        "<th>" .
+                                            "Sum of Dollar Sales" .
+                                        "</th>" .
+                                    "</tr>";
+
+                        foreach($data as $item) {
+                            echo   "<tr>" .
+                                        "<td>" .
+                                            $item->city .
+                                        "</td>" .
+                                        "<td>" .
+                                            $item->category .
+                                        "</td>" .
+                                        "<td>" .
+                                            $item->week_number_in_year .
+                                        "</td>" .
+                                        "<td>" .
+                                            $item->total .
+                                        "</td>" .
+                                    "</tr>";
+                        }
+
+                        echo "</tbody>" .
+                            "</table>" .
+                        "</div>";
+
+                      mysqli_close();
+                    ?>
+            </div>
+        </div>
            
     </body>
 </html>
