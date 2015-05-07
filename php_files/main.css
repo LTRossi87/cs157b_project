@@ -3,7 +3,6 @@ h1 {
  text-align: center;
  height: 50px;
  background-color: darkturquoise;
- 
 }
 
 h3 {
@@ -41,3 +40,19 @@ form {
  text-decoration: line-through;   
 }
 
+#basecubequery {
+ font-size: 15px;   
+ padding-top: 30px;
+}
+
+#basecuberesults {
+ padding-top: 30px; 
+ text-align: center;
+ margin-left: 29%;
+}
+
+
+.scroll {
+ overflow: scroll;
+ height: 200px;
+}
