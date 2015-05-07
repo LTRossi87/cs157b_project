@@ -1,0 +1,487 @@
+I
+Exercise I-1
+SQL> select * from V$SGAINFO
+  2  ;
+
+NAME				      BYTES RES
+-------------------------------- ---------- ---
+Fixed SGA Size			    2217464 No
+Redo Buffers			    6832128 No
+Buffer Cache Size		  276824064 Yes
+Shared Pool Size		  209715200 Yes
+Large Pool Size 		    4194304 Yes
+Java Pool Size			    4194304 Yes
+Streams Pool Size		    4194304 Yes
+Shared IO Pool Size			  0 Yes
+Granule Size			    4194304 No
+Maximum SGA Size		  784998400 No
+Startup overhead in Shared Pool    71303168 No
+
+NAME				      BYTES RES
+-------------------------------- ---------- ---
+Free SGA Memory Available	  276824064
+
+12 rows selected.
+
+Exercise I-2
+SQL> show parameter shared_pool_size;
+
+NAME				     TYPE	 VALUE
+------------------------------------ ----------- ------------------------------
+shared_pool_size		     big integer 0
+SQL> 
+
+SQL> show parameter shared_pool_size;
+
+NAME				     TYPE	 VALUE
+------------------------------------ ----------- ------------------------------
+shared_pool_size		     big integer 0
+SQL> alter system set shared_pool_size=10M;
+
+System altered.
+
+SQL> show paramater shared_pool_size;
+
+SQL> show parameter shared_pool_size;
+
+NAME				     TYPE	 VALUE
+------------------------------------ ----------- ------------------------------
+shared_pool_size		     big integer 12M
+SQL> 
+
+SQL> alter system set shared_pool_size=9M;
+
+System altered.
+
+SQL> show parameter shared_pool_size;  
+
+NAME				     TYPE	 VALUE
+------------------------------------ ----------- ------------------------------
+shared_pool_size		     big integer 12M
+SQL> 
+
+SQL> alter system set shared_pool_size=8M;
+
+System altered.
+
+SQL> show parameter shared_pool_size;
+
+NAME				     TYPE	 VALUE
+------------------------------------ ----------- ------------------------------
+shared_pool_size		     big integer 8M
+SQL> 
+
+II
+
+Exercise II.1
+
+[oracle@cs78 ~]$ sqlplus / as sysdba
+
+SQL*Plus: Release 11.2.0.1.0 Production on Sun May 3 09:54:10 2015
+
+Copyright (c) 1982, 2009, Oracle.  All rights reserved.
+
+Connected to an idle instance.
+
+SQL> STARTUP 
+ORACLE instance started.
+
+Total System Global Area  784998400 bytes
+Fixed Size		    2217464 bytes
+Variable Size		  499124744 bytes
+Database Buffers	  276824064 bytes
+Redo Buffers		    6832128 bytes
+Database mounted.
+Database opened.
+
+SQL> shutdown immediate;
+Database closed.
+Database dismounted.
+ORACLE instance shut down.
+SQL> !    
+[oracle@cs78 ~]$ 
+
+Exercise II.2
+Step 1
+
+SQL> !    
+[oracle@cs78 ~]$ mysqlplus
+bash: mysqlplus: command not found
+[oracle@cs78 ~]$ cd $ORACLE_HOME/dbs
+[oracle@cs78 dbs]$ ls
+hc_ORCL.dat  init.ora  lkORCL  orapwORCL  spfileORCL.ora
+[oracle@cs78 dbs]$ mv spfileORCL.ora /tmp/
+[oracle@cs78 dbs]$ exit
+exit
+
+SQL> shutdown immediate;
+Database closed.
+Database dismounted.
+ORACLE instance shut down.
+
+Step 2
+SQL> startup
+ORA-01078: failure in processing system parameters
+LRM-00109: could not open parameter file '/apps/oracle/product/11.2.0/dbhome_1/dbs/initORCL.ora'
+
+Step 3
+SQL> !
+[oracle@cs78 ~]$ cp /tmp/spfileORCL.ora /apps/oracle/product/11.2.0/dbhome_1/dbs/
+[oracle@cs78 ~]$ exit
+exit
+
+SQL> startup
+ORACLE instance started.
+
+Total System Global Area  784998400 bytes
+Fixed Size		    2217464 bytes
+Variable Size		  511707656 bytes
+Database Buffers	  264241152 bytes
+Redo Buffers		    6832128 bytes
+Database mounted.
+Database opened.
+SQL> 
+
+Exercise II.3
+SQL> show parameter spfile;
+
+NAME				     TYPE	 VALUE
+------------------------------------ ----------- ------------------------------
+spfile				     string	 /apps/oracle/product/11.2.0/db
+						 home_1/dbs/spfileORCL.ora
+SQL> show parameter pfile;
+
+NAME				     TYPE	 VALUE
+------------------------------------ ----------- ------------------------------
+spfile				     string	 /apps/oracle/product/11.2.0/db
+						 home_1/dbs/spfileORCL.ora
+SQL> 
+
+Exercise II.4
+SQL> shutdown immediate;
+Database closed.
+Database dismounted.
+ORACLE instance shut down.
+SQL> startup nomount;
+ORACLE instance started.
+
+Total System Global Area  784998400 bytes
+Fixed Size		    2217464 bytes
+Variable Size		  511707656 bytes
+Database Buffers	  264241152 bytes
+Redo Buffers		    6832128 bytes
+SQL> select status from v$instance;
+
+STATUS
+------------
+STARTED
+
+SQL> alter database mount;
+
+Database altered.
+
+SQL> select status from v$instance;
+
+STATUS
+------------
+MOUNTED
+
+SQL> alter datbase open;
+alter datbase open
+      *
+ERROR at line 1:
+ORA-00940: invalid ALTER command
+
+
+SQL> alter database open;
+
+Database altered.
+
+SQL> 
+
+Exercise II.5
+SQL> shutdown mount;
+SP2-0717: illegal SHUTDOWN option
+SQL> shutdown nomount;
+SP2-0717: illegal SHUTDOWN option
+SQL> shutdown immediate;
+Database closed.
+Database dismounted.
+ORACLE instance shut down.
+SQL> 
+
+III
+Exercise III.1
+SQL> startup;
+ORACLE instance started.
+
+Total System Global Area  784998400 bytes
+Fixed Size		    2217464 bytes
+Variable Size		  511707656 bytes
+Database Buffers	  264241152 bytes
+Redo Buffers		    6832128 bytes
+Database mounted.
+Database opened.
+SQL> select status from v$instance;
+
+STATUS
+------------
+OPEN
+
+SQL> show parameter spfile;
+
+NAME				     TYPE	 VALUE
+------------------------------------ ----------- ------------------------------
+spfile				     string	 /apps/oracle/product/11.2.0/db
+						 home_1/dbs/spfileORCL.ora
+SQL> 
+
+Step 1
+SQL> select name from v$controlfile;
+
+NAME
+--------------------------------------------------------------------------------
+/apps/oracle/oradata/ORCL/control01.ctl
+/apps/oracle/flash_recovery_area/ORCL/control02.ctl
+
+Step 2
+SQL> alter system set control_files ='/apps/oracle/disk1/control01.ctl',
+  2  '/apps/oracle/disk2/control02.ctl' scope = spfile;
+
+System altered.
+
+SQL> shutdown immediate;
+Database closed.
+Database dismounted.
+ORACLE instance shut down.
+SQL> 
+
+Step 3
+SQL> !
+[oracle@cs78 ~]$ cd /apps/ora
+oracle/       oraInventory/ 
+[oracle@cs78 ~]$ cd /apps/oracle/
+[oracle@cs78 ~]$ mkdir disk1 disk2
+[oracle@cs78 ~]$ cp /apps/oracle/ora
+oradata/        oradiag_oracle/ oraenv          
+[oracle@cs78 ~]$ cp /apps/oracle/oradata/ORCL/control01.ctl /apps/oracle/disk1/
+[oracle@cs78 ~]$ ls /apps/oracle/disk1/
+control01.ctl
+[oracle@cs78 ~]$ cp /apps/oracle/oradata/ORCL/control01.ctl /apps/oracle/disk2/control02.ctl
+[oracle@cs78 ~]$ ls /apps/oracle/disk2/
+control02.ctl
+[oracle@cs78 ~]$ exit
+exit
+
+SQL> startup;
+ORACLE instance started.
+
+Total System Global Area  784998400 bytes
+Fixed Size		    2217464 bytes
+Variable Size		  511707656 bytes
+Database Buffers	  264241152 bytes
+Redo Buffers		    6832128 bytes
+Database mounted.
+Database opened.
+SQL> select name from v$controlfile;
+
+NAME
+--------------------------------------------------------------------------------
+/apps/oracle/disk1/control01.ctl
+/apps/oracle/disk2/control02.ctl
+
+SQL> 
+
+Step 4
+
+SQL> !cp /apps/oracle/disk1/control01.ctl /apps/oracle/oradata/ORCL/control01.ctl
+SQL> !cp /apps/oracle/disk2/control02.ctl /apps/oracle/flash_recovery_area/ORCL/control02.ctl
+SQL> alter system set control_files =' /apps/oracle/oradata/ORCL/conLrolO: .ctl ',
+  2  ' /apps/oracle/flasn_recovery_area/ORCL/control02 .ctl ' scope=spfile;
+
+System altered.
+
+SQL> 
+
+IV
+
+Exercise IV.1
+Step 1
+set line 200
+col group# for 999
+col mb for 999
+col member for a45
+col seq# for 999
+col status for a8
+col arc for a5
+
+SELECT a.group#, a.member, b.bytes/1024/1024 MB, b.sequence# "SEQ#", b.status, b.archived "ARC"
+FROM v$logfile a, v$log b
+WHERE a.group#=b.group#
+ORDER BY 1, 2
+/
+
+SQL> @log
+
+GROUP# MEMBER					       MB SEQ# STATUS	ARC
+------ --------------------------------------------- ---- ---- -------- -----
+     1 /apps/oracle/oradata/ORCL/redo01.log	       50    7 INACTIVE NO
+     2 /apps/oracle/oradata/ORCL/redo02.log	       50    8 ACTIVE	NO
+     3 /apps/oracle/oradata/ORCL/redo03.log	       50    9 CURRENT	NO
+
+SQL>
+
+Step 2
+
+SQL> alter database add logfile group 4
+  2  '/apps/oracle/oradata/ORCL/redo04_a.log' size 5M;
+
+Database altered.
+
+SQL> @log
+
+GROUP# MEMBER					       MB SEQ# STATUS	ARC
+------ --------------------------------------------- ---- ---- -------- -----
+     1 /apps/oracle/oradata/ORCL/redo01.log	       50    7 INACTIVE NO
+     2 /apps/oracle/oradata/ORCL/redo02.log	       50    8 INACTIVE NO
+     3 /apps/oracle/oradata/ORCL/redo03.log	       50    9 CURRENT	NO
+     4 /apps/oracle/oradata/ORCL/redo04_a.log		5    0 UNUSED	YES
+
+SQL> alter database add logfile member
+  2  '/apps/oracle/oradata/ORCL/redo04_b.log' to group 4;
+
+Database altered.
+
+SQL> @log
+
+GROUP# MEMBER					       MB SEQ# STATUS	ARC
+------ --------------------------------------------- ---- ---- -------- -----
+     1 /apps/oracle/oradata/ORCL/redo01.log	       50    7 INACTIVE NO
+     2 /apps/oracle/oradata/ORCL/redo02.log	       50    8 INACTIVE NO
+     3 /apps/oracle/oradata/ORCL/redo03.log	       50    9 CURRENT	NO
+     4 /apps/oracle/oradata/ORCL/redo04_a.log		5    0 UNUSED	YES
+     4 /apps/oracle/oradata/ORCL/redo04_b.log		5    0 UNUSED	YES
+
+SQL> 
+
+SQL> alter system switch logfile;
+
+System altered.
+
+SQL> @log
+
+GROUP# MEMBER					       MB SEQ# STATUS	ARC
+------ --------------------------------------------- ---- ---- -------- -----
+     1 /apps/oracle/oradata/ORCL/redo01.log	       50    7 INACTIVE NO
+     2 /apps/oracle/oradata/ORCL/redo02.log	       50    8 INACTIVE NO
+     3 /apps/oracle/oradata/ORCL/redo03.log	       50    9 ACTIVE	NO
+     4 /apps/oracle/oradata/ORCL/redo04_a.log		5   10 CURRENT	NO
+     4 /apps/oracle/oradata/ORCL/redo04_b.log		5   10 CURRENT	NO
+
+SQL> 
+
+SQL> alter system checkpoint;
+
+System altered.
+
+SQL> @log
+
+GROUP# MEMBER					       MB SEQ# STATUS	ARC
+------ --------------------------------------------- ---- ---- -------- -----
+     1 /apps/oracle/oradata/ORCL/redo01.log	       50    7 INACTIVE NO
+     2 /apps/oracle/oradata/ORCL/redo02.log	       50    8 INACTIVE NO
+     3 /apps/oracle/oradata/ORCL/redo03.log	       50    9 INACTIVE NO
+     4 /apps/oracle/oradata/ORCL/redo04_a.log		5   10 CURRENT	NO
+     4 /apps/oracle/oradata/ORCL/redo04_b.log		5   10 CURRENT	NO
+
+SQL> 
+
+Step 3
+
+SQL> alter system switch logfile;
+
+System altered.
+
+SQL> @log
+
+GROUP# MEMBER					       MB SEQ# STATUS	ARC
+------ --------------------------------------------- ---- ---- -------- -----
+     1 /apps/oracle/oradata/ORCL/redo01.log	       50   15 CURRENT	NO
+     2 /apps/oracle/oradata/ORCL/redo02.log	       50   12 INACTIVE NO
+     3 /apps/oracle/oradata/ORCL/redo03.log	       50   13 ACTIVE	NO
+     4 /apps/oracle/oradata/ORCL/redo04_a.log		5   14 ACTIVE	NO
+     4 /apps/oracle/oradata/ORCL/redo04_b.log		5   14 ACTIVE	NO
+
+SQL> alter system checkpoint;
+    
+System altered.
+
+SQL> @log
+
+GROUP# MEMBER					       MB SEQ# STATUS	ARC
+------ --------------------------------------------- ---- ---- -------- -----
+     1 /apps/oracle/oradata/ORCL/redo01.log	       50   15 CURRENT	NO
+     2 /apps/oracle/oradata/ORCL/redo02.log	       50   12 INACTIVE NO
+     3 /apps/oracle/oradata/ORCL/redo03.log	       50   13 INACTIVE NO
+     4 /apps/oracle/oradata/ORCL/redo04_a.log		5   14 INACTIVE NO
+     4 /apps/oracle/oradata/ORCL/redo04_b.log		5   14 INACTIVE NO
+
+SQL> 
+
+SQL> alter database drop logfile member '/apps/oracle/oradata/ORCL/redo04_b.log';
+
+Database altered.
+
+SQL> @log
+
+GROUP# MEMBER					       MB SEQ# STATUS	ARC
+------ --------------------------------------------- ---- ---- -------- -----
+     1 /apps/oracle/oradata/ORCL/redo01.log	       50   15 CURRENT	NO
+     2 /apps/oracle/oradata/ORCL/redo02.log	       50   12 INACTIVE NO
+     3 /apps/oracle/oradata/ORCL/redo03.log	       50   13 INACTIVE NO
+     4 /apps/oracle/oradata/ORCL/redo04_a.log		5   14 INACTIVE NO
+
+SQL> 
+
+SQL> !ls /apps/oracle/oradata/ORCL/redo04_b.log
+/apps/oracle/oradata/ORCL/redo04_b.log
+
+SQL> !rm /apps/oracle/oradata/ORCL/redo04_b.log
+
+SQL> !ls /apps/oracle/oradata/ORCL/redo04_b.log
+ls: cannot access /apps/oracle/oradata/ORCL/redo04_b.log: No such file or directory
+
+SQL> 
+
+SQL> alter database drop logfile member '/apps/oracle/oradata/ORCL/redo04_a.log'
+  2  ;
+alter database drop logfile member '/apps/oracle/oradata/ORCL/redo04_a.log'
+*
+ERROR at line 1:
+ORA-00361: cannot remove last log member /apps/oracle/oradata/ORCL/redo04_a.log for group 4
+
+
+SQL> 
+
+SQL> alter database drop logfile group 4;
+
+Database altered.
+
+SQL> @log
+
+GROUP# MEMBER					       MB SEQ# STATUS	ARC
+------ --------------------------------------------- ---- ---- -------- -----
+     1 /apps/oracle/oradata/ORCL/redo01.log	       50   15 CURRENT	NO
+     2 /apps/oracle/oradata/ORCL/redo02.log	       50   12 INACTIVE NO
+     3 /apps/oracle/oradata/ORCL/redo03.log	       50   13 INACTIVE NO
+
+SQL> !rm -fr /apps/oracle/oradata/ORCL/redo04_a.log
+
+
+SQL> !ls /apps/oracle/oradata/ORCL/redo04_a.log
+ls: cannot access /apps/oracle/oradata/ORCL/redo04_a.log: No such file or directory
+
+SQL> 
+
+V
+
