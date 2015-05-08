@@ -1,0 +1,1419 @@
+Three(3) Stars
+Brandon Rossi
+David Hurng
+Jay Patel
+
+:::::::: START ::::::::
+
+:::: I ::::
+
+::::Exercise I-1::::
+
+SQL> select * from V$SGAINFO
+  2  ;
+
+NAME				      BYTES RES
+-------------------------------- ---------- ---
+Fixed SGA Size			    2217464 No
+Redo Buffers			    6832128 No
+Buffer Cache Size		  276824064 Yes
+Shared Pool Size		  209715200 Yes
+Large Pool Size 		    4194304 Yes
+Java Pool Size			    4194304 Yes
+Streams Pool Size		    4194304 Yes
+Shared IO Pool Size			  0 Yes
+Granule Size			    4194304 No
+Maximum SGA Size		  784998400 No
+Startup overhead in Shared Pool    71303168 No
+
+NAME				      BYTES RES
+-------------------------------- ---------- ---
+Free SGA Memory Available	  276824064
+
+12 rows selected.
+
+::::Exercise I-2::::
+
+SQL> show parameter shared_pool_size;
+
+NAME				     TYPE	 VALUE
+------------------------------------ ----------- ------------------------------
+shared_pool_size		     big integer 0
+SQL> 
+
+SQL> show parameter shared_pool_size;
+
+NAME				     TYPE	 VALUE
+------------------------------------ ----------- ------------------------------
+shared_pool_size		     big integer 0
+SQL> alter system set shared_pool_size=10M;
+
+System altered.
+
+SQL> show paramater shared_pool_size;
+
+SQL> show parameter shared_pool_size;
+
+NAME				     TYPE	 VALUE
+------------------------------------ ----------- ------------------------------
+shared_pool_size		     big integer 12M
+SQL> 
+
+SQL> alter system set shared_pool_size=9M;
+
+System altered.
+
+SQL> show parameter shared_pool_size;  
+
+NAME				     TYPE	 VALUE
+------------------------------------ ----------- ------------------------------
+shared_pool_size		     big integer 12M
+SQL> 
+
+SQL> alter system set shared_pool_size=8M;
+
+System altered.
+
+SQL> show parameter shared_pool_size;
+
+NAME				     TYPE	 VALUE
+------------------------------------ ----------- ------------------------------
+shared_pool_size		     big integer 8M
+SQL> 
+
+:::: II ::::
+
+::::Exercise II.1::::
+
+[oracle@cs78 ~]$ sqlplus / as sysdba
+
+SQL*Plus: Release 11.2.0.1.0 Production on Sun May 3 09:54:10 2015
+
+Copyright (c) 1982, 2009, Oracle.  All rights reserved.
+
+Connected to an idle instance.
+
+SQL> STARTUP 
+ORACLE instance started.
+
+Total System Global Area  784998400 bytes
+Fixed Size		    2217464 bytes
+Variable Size		  499124744 bytes
+Database Buffers	  276824064 bytes
+Redo Buffers		    6832128 bytes
+Database mounted.
+Database opened.
+
+SQL> shutdown immediate;
+Database closed.
+Database dismounted.
+ORACLE instance shut down.
+SQL> !    
+[oracle@cs78 ~]$ 
+
+::::Exercise II.2::::
+
+::::Step 1::::
+
+SQL> !    
+[oracle@cs78 ~]$ mysqlplus
+bash: mysqlplus: command not found
+[oracle@cs78 ~]$ cd $ORACLE_HOME/dbs
+[oracle@cs78 dbs]$ ls
+hc_ORCL.dat  init.ora  lkORCL  orapwORCL  spfileORCL.ora
+[oracle@cs78 dbs]$ mv spfileORCL.ora /tmp/
+[oracle@cs78 dbs]$ exit
+exit
+
+SQL> shutdown immediate;
+Database closed.
+Database dismounted.
+ORACLE instance shut down.
+
+::::Step 2::::
+
+SQL> startup
+ORA-01078: failure in processing system parameters
+LRM-00109: could not open parameter file '/apps/oracle/product/11.2.0/dbhome_1/dbs/initORCL.ora'
+
+Step 3
+SQL> !
+[oracle@cs78 ~]$ cp /tmp/spfileORCL.ora /apps/oracle/product/11.2.0/dbhome_1/dbs/
+[oracle@cs78 ~]$ exit
+exit
+
+SQL> startup
+ORACLE instance started.
+
+Total System Global Area  784998400 bytes
+Fixed Size		    2217464 bytes
+Variable Size		  511707656 bytes
+Database Buffers	  264241152 bytes
+Redo Buffers		    6832128 bytes
+Database mounted.
+Database opened.
+SQL> 
+
+::::Exercise II.3::::
+
+SQL> show parameter spfile;
+
+NAME				     TYPE	 VALUE
+------------------------------------ ----------- ------------------------------
+spfile				     string	 /apps/oracle/product/11.2.0/db
+						 home_1/dbs/spfileORCL.ora
+SQL> show parameter pfile;
+
+NAME				     TYPE	 VALUE
+------------------------------------ ----------- ------------------------------
+spfile				     string	 /apps/oracle/product/11.2.0/db
+						 home_1/dbs/spfileORCL.ora
+SQL> 
+
+::::Exercise II.4::::
+
+SQL> shutdown immediate;
+Database closed.
+Database dismounted.
+ORACLE instance shut down.
+SQL> startup nomount;
+ORACLE instance started.
+
+Total System Global Area  784998400 bytes
+Fixed Size		    2217464 bytes
+Variable Size		  511707656 bytes
+Database Buffers	  264241152 bytes
+Redo Buffers		    6832128 bytes
+SQL> select status from v$instance;
+
+STATUS
+------------
+STARTED
+
+SQL> alter database mount;
+
+Database altered.
+
+SQL> select status from v$instance;
+
+STATUS
+------------
+MOUNTED
+
+SQL> alter datbase open;
+alter datbase open
+      *
+ERROR at line 1:
+ORA-00940: invalid ALTER command
+
+
+SQL> alter database open;
+
+Database altered.
+
+SQL> 
+
+::::Exercise II.5::::
+
+SQL> shutdown mount;
+SP2-0717: illegal SHUTDOWN option
+SQL> shutdown nomount;
+SP2-0717: illegal SHUTDOWN option
+SQL> shutdown immediate;
+Database closed.
+Database dismounted.
+ORACLE instance shut down.
+SQL> 
+
+:::: III ::::
+::::Exercise III.1::::
+
+SQL> startup;
+ORACLE instance started.
+
+Total System Global Area  784998400 bytes
+Fixed Size		    2217464 bytes
+Variable Size		  511707656 bytes
+Database Buffers	  264241152 bytes
+Redo Buffers		    6832128 bytes
+Database mounted.
+Database opened.
+SQL> select status from v$instance;
+
+STATUS
+------------
+OPEN
+
+SQL> show parameter spfile;
+
+NAME				     TYPE	 VALUE
+------------------------------------ ----------- ------------------------------
+spfile				     string	 /apps/oracle/product/11.2.0/db
+						 home_1/dbs/spfileORCL.ora
+SQL> 
+
+::::Step 1::::
+
+SQL> select name from v$controlfile;
+
+NAME
+--------------------------------------------------------------------------------
+/apps/oracle/oradata/ORCL/control01.ctl
+/apps/oracle/flash_recovery_area/ORCL/control02.ctl
+
+::::Step 2::::
+
+SQL> alter system set control_files ='/apps/oracle/disk1/control01.ctl',
+  2  '/apps/oracle/disk2/control02.ctl' scope = spfile;
+
+System altered.
+
+SQL> shutdown immediate;
+Database closed.
+Database dismounted.
+ORACLE instance shut down.
+SQL> 
+
+::::Step 3::::
+
+SQL> !
+[oracle@cs78 ~]$ cd /apps/ora
+oracle/       oraInventory/ 
+[oracle@cs78 ~]$ cd /apps/oracle/
+[oracle@cs78 ~]$ mkdir disk1 disk2
+[oracle@cs78 ~]$ cp /apps/oracle/ora
+oradata/        oradiag_oracle/ oraenv          
+[oracle@cs78 ~]$ cp /apps/oracle/oradata/ORCL/control01.ctl /apps/oracle/disk1/
+[oracle@cs78 ~]$ ls /apps/oracle/disk1/
+control01.ctl
+[oracle@cs78 ~]$ cp /apps/oracle/oradata/ORCL/control01.ctl /apps/oracle/disk2/control02.ctl
+[oracle@cs78 ~]$ ls /apps/oracle/disk2/
+control02.ctl
+[oracle@cs78 ~]$ exit
+exit
+
+SQL> startup;
+ORACLE instance started.
+
+Total System Global Area  784998400 bytes
+Fixed Size		    2217464 bytes
+Variable Size		  511707656 bytes
+Database Buffers	  264241152 bytes
+Redo Buffers		    6832128 bytes
+Database mounted.
+Database opened.
+SQL> select name from v$controlfile;
+
+NAME
+--------------------------------------------------------------------------------
+/apps/oracle/disk1/control01.ctl
+/apps/oracle/disk2/control02.ctl
+
+SQL> 
+
+::::Step 4::::
+
+SQL> !cp /apps/oracle/disk1/control01.ctl /apps/oracle/oradata/ORCL/control01.ctl
+SQL> !cp /apps/oracle/disk2/control02.ctl /apps/oracle/flash_recovery_area/ORCL/control02.ctl
+SQL> alter system set control_files =' /apps/oracle/oradata/ORCL/conLrolO: .ctl ',
+  2  ' /apps/oracle/flasn_recovery_area/ORCL/control02 .ctl ' scope=spfile;
+
+System altered.
+
+SQL> 
+
+:::: IV ::::
+
+::::Exercise IV.1::::
+
+::::Step 1::::
+
+set line 200
+col group# for 999
+col mb for 999
+col member for a45
+col seq# for 999
+col status for a8
+col arc for a5
+
+SELECT a.group#, a.member, b.bytes/1024/1024 MB, b.sequence# "SEQ#", b.status, b.archived "ARC"
+FROM v$logfile a, v$log b
+WHERE a.group#=b.group#
+ORDER BY 1, 2
+/
+
+SQL> @log
+
+GROUP# MEMBER					       MB SEQ# STATUS	ARC
+------ --------------------------------------------- ---- ---- -------- -----
+     1 /apps/oracle/oradata/ORCL/redo01.log	       50    7 INACTIVE NO
+     2 /apps/oracle/oradata/ORCL/redo02.log	       50    8 ACTIVE	NO
+     3 /apps/oracle/oradata/ORCL/redo03.log	       50    9 CURRENT	NO
+
+SQL>
+
+::::Step 2::::
+
+SQL> alter database add logfile group 4
+  2  '/apps/oracle/oradata/ORCL/redo04_a.log' size 5M;
+
+Database altered.
+
+SQL> @log
+
+GROUP# MEMBER					       MB SEQ# STATUS	ARC
+------ --------------------------------------------- ---- ---- -------- -----
+     1 /apps/oracle/oradata/ORCL/redo01.log	       50    7 INACTIVE NO
+     2 /apps/oracle/oradata/ORCL/redo02.log	       50    8 INACTIVE NO
+     3 /apps/oracle/oradata/ORCL/redo03.log	       50    9 CURRENT	NO
+     4 /apps/oracle/oradata/ORCL/redo04_a.log		5    0 UNUSED	YES
+
+SQL> alter database add logfile member
+  2  '/apps/oracle/oradata/ORCL/redo04_b.log' to group 4;
+
+Database altered.
+
+SQL> @log
+
+GROUP# MEMBER					       MB SEQ# STATUS	ARC
+------ --------------------------------------------- ---- ---- -------- -----
+     1 /apps/oracle/oradata/ORCL/redo01.log	       50    7 INACTIVE NO
+     2 /apps/oracle/oradata/ORCL/redo02.log	       50    8 INACTIVE NO
+     3 /apps/oracle/oradata/ORCL/redo03.log	       50    9 CURRENT	NO
+     4 /apps/oracle/oradata/ORCL/redo04_a.log		5    0 UNUSED	YES
+     4 /apps/oracle/oradata/ORCL/redo04_b.log		5    0 UNUSED	YES
+
+SQL> 
+
+SQL> alter system switch logfile;
+
+System altered.
+
+SQL> @log
+
+GROUP# MEMBER					       MB SEQ# STATUS	ARC
+------ --------------------------------------------- ---- ---- -------- -----
+     1 /apps/oracle/oradata/ORCL/redo01.log	       50    7 INACTIVE NO
+     2 /apps/oracle/oradata/ORCL/redo02.log	       50    8 INACTIVE NO
+     3 /apps/oracle/oradata/ORCL/redo03.log	       50    9 ACTIVE	NO
+     4 /apps/oracle/oradata/ORCL/redo04_a.log		5   10 CURRENT	NO
+     4 /apps/oracle/oradata/ORCL/redo04_b.log		5   10 CURRENT	NO
+
+SQL> 
+
+SQL> alter system checkpoint;
+
+System altered.
+
+SQL> @log
+
+GROUP# MEMBER					       MB SEQ# STATUS	ARC
+------ --------------------------------------------- ---- ---- -------- -----
+     1 /apps/oracle/oradata/ORCL/redo01.log	       50    7 INACTIVE NO
+     2 /apps/oracle/oradata/ORCL/redo02.log	       50    8 INACTIVE NO
+     3 /apps/oracle/oradata/ORCL/redo03.log	       50    9 INACTIVE NO
+     4 /apps/oracle/oradata/ORCL/redo04_a.log		5   10 CURRENT	NO
+     4 /apps/oracle/oradata/ORCL/redo04_b.log		5   10 CURRENT	NO
+
+SQL> 
+
+::::Step 3::::
+
+SQL> alter system switch logfile;
+
+System altered.
+
+SQL> @log
+
+GROUP# MEMBER					       MB SEQ# STATUS	ARC
+------ --------------------------------------------- ---- ---- -------- -----
+     1 /apps/oracle/oradata/ORCL/redo01.log	       50   15 CURRENT	NO
+     2 /apps/oracle/oradata/ORCL/redo02.log	       50   12 INACTIVE NO
+     3 /apps/oracle/oradata/ORCL/redo03.log	       50   13 ACTIVE	NO
+     4 /apps/oracle/oradata/ORCL/redo04_a.log		5   14 ACTIVE	NO
+     4 /apps/oracle/oradata/ORCL/redo04_b.log		5   14 ACTIVE	NO
+
+SQL> alter system checkpoint;
+    
+System altered.
+
+SQL> @log
+
+GROUP# MEMBER					       MB SEQ# STATUS	ARC
+------ --------------------------------------------- ---- ---- -------- -----
+     1 /apps/oracle/oradata/ORCL/redo01.log	       50   15 CURRENT	NO
+     2 /apps/oracle/oradata/ORCL/redo02.log	       50   12 INACTIVE NO
+     3 /apps/oracle/oradata/ORCL/redo03.log	       50   13 INACTIVE NO
+     4 /apps/oracle/oradata/ORCL/redo04_a.log		5   14 INACTIVE NO
+     4 /apps/oracle/oradata/ORCL/redo04_b.log		5   14 INACTIVE NO
+
+SQL> 
+
+SQL> alter database drop logfile member '/apps/oracle/oradata/ORCL/redo04_b.log';
+
+Database altered.
+
+SQL> @log
+
+GROUP# MEMBER					       MB SEQ# STATUS	ARC
+------ --------------------------------------------- ---- ---- -------- -----
+     1 /apps/oracle/oradata/ORCL/redo01.log	       50   15 CURRENT	NO
+     2 /apps/oracle/oradata/ORCL/redo02.log	       50   12 INACTIVE NO
+     3 /apps/oracle/oradata/ORCL/redo03.log	       50   13 INACTIVE NO
+     4 /apps/oracle/oradata/ORCL/redo04_a.log		5   14 INACTIVE NO
+
+SQL> 
+
+SQL> !ls /apps/oracle/oradata/ORCL/redo04_b.log
+/apps/oracle/oradata/ORCL/redo04_b.log
+
+SQL> !rm /apps/oracle/oradata/ORCL/redo04_b.log
+
+SQL> !ls /apps/oracle/oradata/ORCL/redo04_b.log
+ls: cannot access /apps/oracle/oradata/ORCL/redo04_b.log: No such file or directory
+
+SQL> 
+
+SQL> alter database drop logfile member '/apps/oracle/oradata/ORCL/redo04_a.log'
+  2  ;
+alter database drop logfile member '/apps/oracle/oradata/ORCL/redo04_a.log'
+*
+ERROR at line 1:
+ORA-00361: cannot remove last log member /apps/oracle/oradata/ORCL/redo04_a.log for group 4
+
+
+SQL> 
+
+SQL> alter database drop logfile group 4;
+
+Database altered.
+
+SQL> @log
+
+GROUP# MEMBER					       MB SEQ# STATUS	ARC
+------ --------------------------------------------- ---- ---- -------- -----
+     1 /apps/oracle/oradata/ORCL/redo01.log	       50   15 CURRENT	NO
+     2 /apps/oracle/oradata/ORCL/redo02.log	       50   12 INACTIVE NO
+     3 /apps/oracle/oradata/ORCL/redo03.log	       50   13 INACTIVE NO
+
+SQL> !rm -fr /apps/oracle/oradata/ORCL/redo04_a.log
+
+
+SQL> !ls /apps/oracle/oradata/ORCL/redo04_a.log
+ls: cannot access /apps/oracle/oradata/ORCL/redo04_a.log: No such file or directory
+
+SQL> 
+
+:::: V ::::
+
+SQL> select count(*) from dictionary;
+
+  COUNT(*)
+----------
+      2553
+
+SQL> 
+
+::::Exercise V-1::::
+
+::::Step 1::::
+
+SQL> select * from all_users;
+
+USERNAME			  USER_ID CREATED
+------------------------------ ---------- ---------
+BI				       90 18-APR-15
+PM				       89 18-APR-15
+SH				       88 18-APR-15
+IX				       87 18-APR-15
+OE				       86 18-APR-15
+HR				       85 18-APR-15
+SCOTT				       84 15-AUG-09
+OWBSYS_AUDIT			       83 15-AUG-09
+OWBSYS				       79 15-AUG-09
+APEX_030200			       78 15-AUG-09
+APEX_PUBLIC_USER		       76 15-AUG-09
+
+USERNAME			  USER_ID CREATED
+------------------------------ ---------- ---------
+FLOWS_FILES			       75 15-AUG-09
+MGMT_VIEW			       74 15-AUG-09
+SYSMAN				       72 15-AUG-09
+SPATIAL_CSW_ADMIN_USR		       70 15-AUG-09
+SPATIAL_WFS_ADMIN_USR		       67 15-AUG-09
+MDDATA				       65 15-AUG-09
+MDSYS				       57 15-AUG-09
+SI_INFORMTN_SCHEMA		       56 15-AUG-09
+ORDPLUGINS			       55 15-AUG-09
+ORDDATA 			       54 15-AUG-09
+ORDSYS				       53 15-AUG-09
+
+USERNAME			  USER_ID CREATED
+------------------------------ ---------- ---------
+OLAPSYS 			       61 15-AUG-09
+ANONYMOUS			       46 15-AUG-09
+XDB				       45 15-AUG-09
+CTXSYS				       43 15-AUG-09
+EXFSYS				       42 15-AUG-09
+XS$NULL 		       2147483638 15-AUG-09
+WMSYS				       32 15-AUG-09
+APPQOSSYS			       31 15-AUG-09
+DBSNMP				       30 15-AUG-09
+ORACLE_OCM			       21 15-AUG-09
+DIP				       14 15-AUG-09
+
+USERNAME			  USER_ID CREATED
+------------------------------ ---------- ---------
+OUTLN					9 15-AUG-09
+SYSTEM					5 15-AUG-09
+SYS					0 15-AUG-09
+
+36 rows selected.
+
+SQL> 
+
+SQL> alter user scott identified by tiger
+  2  ;
+
+User altered.
+
+SQL> 
+
+::::Step 2::::
+
+[oracle@cs78 ~]$ sqlplus scott/tiger
+
+SQL*Plus: Release 11.2.0.1.0 Production on Thu May 7 13:52:53 2015
+
+Copyright (c) 1982, 2009, Oracle.  All rights reserved.
+
+ERROR:
+ORA-28000: the account is locked
+
+
+Enter user-name: 
+ERROR:
+
+SQL> alter user scott account unlock;
+
+User altered.
+
+SQL> exit
+
+::::Step 3::::
+
+[oracle@cs78 ~]$ sqlplus scott/tiger
+
+SQL*Plus: Release 11.2.0.1.0 Production on Thu May 7 13:55:25 2015
+
+Copyright (c) 1982, 2009, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.1.0 - 64bit Production
+With the Partitioning, OLAP, Data Mining and Real Application Testing options
+
+SQL> 
+
+::::Step 4::::
+
+SQL> create table stest (no number);   
+
+Table created.
+
+SQL> begin
+  2  for i in 1..100 loop
+  3  insert into stest values (i);
+  4  end loop;
+  5  commit;
+  6  end;
+  7  /
+
+PL/SQL procedure successfully completed.
+
+SQL> select count(*) from stest;
+
+  COUNT(*)
+----------
+       100
+
+SQL> 
+
+::::Step 5::::
+
+SQL> select table_name, tablespace_name from user_tables where table_name='STEST';
+
+TABLE_NAME		       TABLESPACE_NAME
+------------------------------ ------------------------------
+STEST			       USERS
+
+SQL> select table_name, tablespace_name from all_tables where owner='SCOTT';
+
+TABLE_NAME		       TABLESPACE_NAME
+------------------------------ ------------------------------
+DEPT			       USERS
+EMP			       USERS
+SALGRADE		       USERS
+STEST			       USERS
+BONUS			       USERS
+
+SQL> 
+
+::::Exercise V-2::::
+
+::::Step 1::::
+
+SQL> create tablespace college
+  2  datafile '/apps/oracle/oradata/ORCL/college01.dbf' size 1M;
+
+Tablespace created.
+
+SQL> 
+
+::::Step 2::::
+
+SQL> select tablespace_name, status, contents, extent_management, segment_space_management from dba_tablespaces;
+
+TABLESPACE_NAME 	       STATUS	 CONTENTS  EXTENT_MAN SEGMEN
+------------------------------ --------- --------- ---------- ------
+SYSTEM			       ONLINE	 PERMANENT LOCAL      MANUAL
+SYSAUX			       ONLINE	 PERMANENT LOCAL      AUTO
+UNDOTBS1		       ONLINE	 UNDO	   LOCAL      MANUAL
+TEMP			       ONLINE	 TEMPORARY LOCAL      MANUAL
+USERS			       ONLINE	 PERMANENT LOCAL      AUTO
+EXAMPLE 		       ONLINE	 PERMANENT LOCAL      AUTO
+COLLEGE 		       ONLINE	 PERMANENT LOCAL      AUTO
+
+7 rows selected.
+
+SQL> 
+
+::::Step 3::::
+
+SQL> select tablespace_name, bytes/1024/1024 MB, file_name from dba_data_files;
+
+TABLESPACE_NAME 		       MB
+------------------------------ ----------
+FILE_NAME
+--------------------------------------------------------------------------------
+USERS					5
+/apps/oracle/oradata/ORCL/users01.dbf
+
+UNDOTBS1			       55
+/apps/oracle/oradata/ORCL/undotbs01.dbf
+
+SYSAUX				      580
+/apps/oracle/oradata/ORCL/sysaux01.dbf
+
+
+TABLESPACE_NAME 		       MB
+------------------------------ ----------
+FILE_NAME
+--------------------------------------------------------------------------------
+SYSTEM				      680
+/apps/oracle/oradata/ORCL/system01.dbf
+
+EXAMPLE 			      100
+/apps/oracle/oradata/ORCL/example01.dbf
+
+COLLEGE 				1
+/apps/oracle/oradata/ORCL/college01.dbf
+
+
+6 rows selected.
+
+SQL> 
+
+::::Step 4::::
+
+SQL> !nano usage.sql
+
+SQL> @usage
+
+FILE# TS_NAME		 MB TOTAL_BLOCKS USED_BLOCKS PCT_USED
+----- ---------- ---------- ------------ ----------- ----------
+    1 SYSTEM		680	   87040       86896  99.83%
+    2 SYSAUX		580	   74240       70488  94.95%
+    3 UNDOTBS1		 55	    7040	1824  25.91%
+    4 USERS		  5	     640	 400  62.50%
+    5 EXAMPLE		100	   12800	9912  77.44%
+    6 COLLEGE		  1	     128	      00.00%
+
+6 rows selected.
+
+SQL> 
+
+::::Exercise V-2::::
+
+::::Step 1::::
+
+SQL> create table scott.admission (studno number) tablespace college;
+
+Table created.
+
+SQL> 
+
+::::Step 2::::
+
+SQL> begin
+  2  for i in 1..50000 loop
+  3  insert into scott.admission values(i);
+  4  end loop;
+  5  commit;
+  6  end;
+  7  /
+
+PL/SQL procedure successfully completed.
+
+SQL> 
+
+::::Step 3::::
+
+SQL> begin    
+  2  for i in 1..50000 loop
+  3  insert into scott.admission values(i);
+  4  end loop;
+  5  commit;
+  6  end;
+  7  /
+begin
+*
+ERROR at line 1:
+ORA-01653: unable to extend table SCOTT.ADMISSION by 8 in tablespace COLLEGE
+ORA-06512: at line 3
+
+
+SQL> 
+
+::::Solution 1::::
+
+SQL> alter tablespace college
+  2  add datafile '/apps/oracle/oradata/ORCL/college02.dbf' size 20M;
+
+Tablespace altered.
+
+SQL> 
+
+SQL> @check_files;
+
+TABLESPACE_NAME 		       MB
+------------------------------ ----------
+FILE_NAME
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+USERS					5
+/apps/oracle/oradata/ORCL/users01.dbf
+
+UNDOTBS1			       55
+/apps/oracle/oradata/ORCL/undotbs01.dbf
+
+SYSAUX				      580
+/apps/oracle/oradata/ORCL/sysaux01.dbf
+
+
+TABLESPACE_NAME 		       MB
+------------------------------ ----------
+FILE_NAME
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+SYSTEM				      680
+/apps/oracle/oradata/ORCL/system01.dbf
+
+EXAMPLE 			      100
+/apps/oracle/oradata/ORCL/example01.dbf
+
+COLLEGE 				1
+/apps/oracle/oradata/ORCL/college01.dbf
+
+
+TABLESPACE_NAME 		       MB
+------------------------------ ----------
+FILE_NAME
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+COLLEGE 			       20
+/apps/oracle/oradata/ORCL/college02.dbf
+
+
+7 rows selected.
+
+SQL> 
+
+::::Solution 2::::
+
+SQL> alter database datafile '/apps/oracle/oradata/ORCL/college01.dbf' resize 20M;
+
+Database altered.
+
+SQL> @check_files;
+
+TABLESPACE_NAME 		       MB
+------------------------------ ----------
+FILE_NAME
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+USERS					5
+/apps/oracle/oradata/ORCL/users01.dbf
+
+UNDOTBS1			       55
+/apps/oracle/oradata/ORCL/undotbs01.dbf
+
+SYSAUX				      580
+/apps/oracle/oradata/ORCL/sysaux01.dbf
+
+
+TABLESPACE_NAME 		       MB
+------------------------------ ----------
+FILE_NAME
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+SYSTEM				      680
+/apps/oracle/oradata/ORCL/system01.dbf
+
+EXAMPLE 			      100
+/apps/oracle/oradata/ORCL/example01.dbf
+
+COLLEGE 			       20
+/apps/oracle/oradata/ORCL/college01.dbf
+
+
+TABLESPACE_NAME 		       MB
+------------------------------ ----------
+FILE_NAME
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+COLLEGE 			       20
+/apps/oracle/oradata/ORCL/college02.dbf
+
+7 rows selected.
+
+SQL> 
+
+::::Solution 3::::
+
+::::Step 1::::
+
+SQL> alter database datafile '/apps/oracle/oradata/ORCL/college02.dbf' offline drop;
+
+Database altered.
+
+SQL> !rm /apps/oracle/oradata/ORCL/college02.dbf
+
+SQL> shutdown immediate;
+Database closed.
+Database dismounted.
+ORACLE instance shut down.
+SQL> startup;
+ORACLE instance started.
+
+Total System Global Area  784998400 bytes
+Fixed Size		    2217464 bytes
+Variable Size		  587205128 bytes
+Database Buffers	  188743680 bytes
+Redo Buffers		    6832128 bytes
+Database mounted.
+Database opened.
+SQL> 
+
+::::Step 2::::
+
+SQL> alter database datafile '/apps/oracle/oradata/ORCL/college01.dbf' resize 1M;
+
+Database altered.
+
+SQL> alter database datafile '/apps/oracle/oradata/ORCL/college01.dbf' autoextend on;
+
+Database altered.
+
+SQL> @usage
+
+FILE# TS_NAME		 MB TOTAL_BLOCKS USED_BLOCKS PCT_USED
+----- ---------- ---------- ------------ ----------- ----------
+    1 SYSTEM		680	   87040       86896  99.83%
+    2 SYSAUX		580	   74240       70488  94.95%
+    3 UNDOTBS1		 55	    7040	2336  33.18%
+    4 USERS		  5	     640	 400  62.50%
+    5 EXAMPLE		100	   12800	9912  77.44%
+    6 COLLEGE		  1	     128	 120  93.75%
+    7 COLLEGE					      00.00%
+
+7 rows selected.
+
+SQL> select tablespace_name, bytes/1024/1024 MB, file_name, autoextensible "Auto", online_status from dba_data_files;
+
+TABLESPACE_NAME 		       MB
+------------------------------ ----------
+FILE_NAME
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Aut ONLINE_
+--- -------
+USERS					5
+/apps/oracle/oradata/ORCL/users01.dbf
+YES ONLINE
+
+UNDOTBS1			       55
+/apps/oracle/oradata/ORCL/undotbs01.dbf
+YES ONLINE
+
+TABLESPACE_NAME 		       MB
+------------------------------ ----------
+FILE_NAME
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Aut ONLINE_
+--- -------
+
+SYSAUX				      580
+/apps/oracle/oradata/ORCL/sysaux01.dbf
+YES ONLINE
+
+SYSTEM				      680
+/apps/oracle/oradata/ORCL/system01.dbf
+
+TABLESPACE_NAME 		       MB
+------------------------------ ----------
+FILE_NAME
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Aut ONLINE_
+--- -------
+YES SYSTEM
+
+EXAMPLE 			      100
+/apps/oracle/oradata/ORCL/example01.dbf
+YES ONLINE
+
+COLLEGE 				1
+
+TABLESPACE_NAME 		       MB
+------------------------------ ----------
+FILE_NAME
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Aut ONLINE_
+--- -------
+/apps/oracle/oradata/ORCL/college01.dbf
+YES ONLINE
+
+COLLEGE
+/apps/oracle/oradata/ORCL/college02.dbf
+    RECOVER
+
+
+7 rows selected.
+
+SQL> 
+
+::::Step 3::::
+
+SQL> begin
+  2  for i in 1..50000 loop
+  3  insert into scott.admission values(i);
+  4  end loop;
+  5  commit;
+  6  end
+  7  ;
+  8  /
+
+PL/SQL procedure successfully completed.
+
+SQL> 
+
+PL/SQL procedure successfully completed.
+
+SQL> /
+
+PL/SQL procedure successfully completed.
+
+SQL> @check_files
+
+TABLESPACE_NAME 		       MB
+------------------------------ ----------
+FILE_NAME
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+USERS					5
+/apps/oracle/oradata/ORCL/users01.dbf
+
+UNDOTBS1			       55
+/apps/oracle/oradata/ORCL/undotbs01.dbf
+
+SYSAUX				      580
+/apps/oracle/oradata/ORCL/sysaux01.dbf
+
+
+TABLESPACE_NAME 		       MB
+------------------------------ ----------
+FILE_NAME
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+SYSTEM				      680
+/apps/oracle/oradata/ORCL/system01.dbf
+
+EXAMPLE 			      100
+/apps/oracle/oradata/ORCL/example01.dbf
+
+COLLEGE 			   3.0625
+/apps/oracle/oradata/ORCL/college01.dbf
+
+
+TABLESPACE_NAME 		       MB
+------------------------------ ----------
+FILE_NAME
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+COLLEGE
+/apps/oracle/oradata/ORCL/college02.dbf
+
+
+7 rows selected.
+
+SQL> 
+
+::::Exercise V-3::::
+
+::::Step 1::::
+
+SQL> alter tablespace college
+  2  add datafile '/apps/oracle/oradata/ORCL/college02.dbf' size 20M;
+alter tablespace college
+*
+ERROR at line 1:
+ORA-01537: cannot add file '/apps/oracle/oradata/ORCL/college02.dbf' - file already part of database
+
+SQL> select file#, name, status from v$datafile;
+
+FILE# NAME						 STATUS
+----- -------------------------------------------------- -------
+    1 /apps/oracle/oradata/ORCL/system01.dbf		 SYSTEM
+    2 /apps/oracle/oradata/ORCL/sysaux01.dbf		 ONLINE
+    3 /apps/oracle/oradata/ORCL/undotbs01.dbf		 ONLINE
+    4 /apps/oracle/oradata/ORCL/users01.dbf		 	 ONLINE
+    5 /apps/oracle/oradata/ORCL/example01.dbf		 ONLINE
+    6 /apps/oracle/oradata/ORCL/college01.dbf		 ONLINE
+    7 /apps/oracle/oradata/ORCL/college02.dbf		 RECOVER
+
+7 rows selected.
+
+SQL> 
+
+::::Step 2::::
+
+SQL> select file#, name, status from v$datafile;
+
+FILE# NAME						 STATUS
+----- -------------------------------------------------- -------
+    1 /apps/oracle/oradata/ORCL/system01.dbf		 SYSTEM
+    2 /apps/oracle/oradata/ORCL/sysaux01.dbf		 ONLINE
+    3 /apps/oracle/oradata/ORCL/undotbs01.dbf		 ONLINE
+    4 /apps/oracle/oradata/ORCL/users01.dbf		 	 ONLINE
+    5 /apps/oracle/oradata/ORCL/example01.dbf		 ONLINE
+    6 /apps/oracle/oradata/ORCL/college01.dbf		 ONLINE
+    7 /apps/oracle/oradata/ORCL/college02.dbf		 RECOVER
+
+7 rows selected.
+
+SQL> 
+
+::::Step 3::::
+
+SQL> select file#, name, status from v$datafile;
+
+FILE# NAME						 STATUS
+----- -------------------------------------------------- -------
+    1 /apps/oracle/oradata/ORCL/system01.dbf		 SYSTEM
+    2 /apps/oracle/oradata/ORCL/sysaux01.dbf		 ONLINE
+    3 /apps/oracle/oradata/ORCL/undotbs01.dbf		 ONLINE
+    4 /apps/oracle/oradata/ORCL/users01.dbf		 ONLINE
+    5 /apps/oracle/oradata/ORCL/example01.dbf		 OFFLINE
+    6 /apps/oracle/oradata/ORCL/college01.dbf		 ONLINE
+    7 /apps/oracle/oradata/ORCL/college02.dbf		 RECOVER
+
+7 rows selected.
+
+SQL> 
+
+::::Step 4::::
+
+SQL> !nano show_scn.sql
+
+SQL> @show_scn
+
+FILE#	     TS# NAME						    STATUS  CHECKPOINT_CHANGE#
+----- ---------- -------------------------------------------------- ------- ------------------
+    1	       0 SYSTEM 					    SYSTEM	       1567828
+    2	       1 SYSAUX 					    ONLINE	       1567828
+    3	       2 UNDOTBS1					    ONLINE	       1567828
+    4	       4 USERS						    ONLINE	       1567828
+    5	       6 EXAMPLE					    OFFLINE	       1570889
+    6	       7 COLLEGE					    ONLINE	       1567828
+    7	       7 COLLEGE					    RECOVER	       1559144
+
+7 rows selected.
+
+SQL> 
+
+
+::::Step 5::::
+
+SQL> alter tablespace example online;
+
+Tablespace altered.
+
+SQL> @show_scn
+
+FILE#	     TS# NAME						    STATUS  CHECKPOINT_CHANGE#
+----- ---------- -------------------------------------------------- ------- ------------------
+    1	       0 SYSTEM 					    SYSTEM	       1567828
+    2	       1 SYSAUX 					    ONLINE	       1567828
+    3	       2 UNDOTBS1					    ONLINE	       1567828
+    4	       4 USERS						    ONLINE	       1567828
+    5	       6 EXAMPLE					    ONLINE	       1571169
+    6	       7 COLLEGE					    ONLINE	       1567828
+    7	       7 COLLEGE					    RECOVER	       1559144
+
+7 rows selected.
+
+SQL> 
+
+::::Step 6::::
+
+SQL> alter system checkpoint;
+
+System altered.
+
+SQL> @show_scn 
+
+FILE#	     TS# NAME						    STATUS  CHECKPOINT_CHANGE#
+----- ---------- -------------------------------------------------- ------- ------------------
+    1	       0 SYSTEM 					    SYSTEM	       1571486
+    2	       1 SYSAUX 					    ONLINE	       1571486
+    3	       2 UNDOTBS1					    ONLINE	       1571486
+    4	       4 USERS						    ONLINE	       1571486
+    5	       6 EXAMPLE					    ONLINE	       1571486
+    6	       7 COLLEGE					    ONLINE	       1571486
+    7	       7 COLLEGE					    RECOVER	       1559144
+
+7 rows selected.
+
+SQL> 
+
+
+::::Step 7::::
+
+SQL> alter tablespace college offline;
+alter tablespace college offline
+*
+ERROR at line 1:
+ORA-01191: file 7 is already offline - cannot do a normal offline
+ORA-01110: data file 7: '/apps/oracle/oradata/ORCL/college02.dbf'
+
+
+SQL> 
+
+SQL> alter tablespace college offline temporary;
+
+Tablespace altered.
+
+SQL> @show_scn
+
+FILE#	     TS# NAME						    STATUS  CHECKPOINT_CHANGE#
+----- ---------- -------------------------------------------------- ------- ------------------
+    1	       0 SYSTEM 					    SYSTEM	       1572875
+    2	       1 SYSAUX 					    ONLINE	       1572875
+    3	       2 UNDOTBS1					    ONLINE	       1572875
+    4	       4 USERS						    ONLINE	       1572875
+    5	       6 EXAMPLE					    ONLINE	       1572875
+    6	       7 COLLEGE					    OFFLINE	       1582428
+    7	       7 COLLEGE					    RECOVER	       1580232
+
+7 rows selected.
+
+SQL> recover tablespace college;
+Media recovery complete.
+SQL> alter tablespace college online;
+
+Tablespace altered.
+
+SQL> @show_scn
+
+FILE#	     TS# NAME						    STATUS  CHECKPOINT_CHANGE#
+----- ---------- -------------------------------------------------- ------- ------------------
+    1	       0 SYSTEM 					    SYSTEM	       1572875
+    2	       1 SYSAUX 					    ONLINE	       1572875
+    3	       2 UNDOTBS1					    ONLINE	       1572875
+    4	       4 USERS						    ONLINE	       1572875
+    5	       6 EXAMPLE					    ONLINE	       1572875
+    6	       7 COLLEGE					    ONLINE	       1582476
+    7	       7 COLLEGE					    ONLINE	       1582476
+
+7 rows selected.
+
+SQL> 
+
+SQL> alter system checkpoint;
+
+System altered.
+
+SQL> @show_scn
+
+FILE#	     TS# NAME						    STATUS  CHECKPOINT_CHANGE#
+----- ---------- -------------------------------------------------- ------- ------------------
+    1	       0 SYSTEM 					    SYSTEM       1582532
+    2	       1 SYSAUX 					    ONLINE       1582532
+    3	       2 UNDOTBS1					    ONLINE       1582532
+    4	       4 USERS						    ONLINE       1582532
+    5	       6 EXAMPLE					    ONLINE       1582532
+    6	       7 COLLEGE					    ONLINE       1582532
+    7	       7 COLLEGE					    ONLINE       1582532
+
+7 rows selected.
+
+SQL> 
+
+::::Exercise V-4::::
+
+::::Case 1::::
+
+::::Step 1::::
+
+SQL> !mkdir /apps/oracle/disk3
+
+SQL> !mkdir /apps/oracle/disk4
+
+::::Step 2::::
+
+SQL> alter tablespace college offline;
+
+Tablespace altered.
+
+::::Step 3::::
+
+SQL> !cp /apps/oracle/oradata/ORCL/college01.dbf /apps/oracle/disk3
+
+SQL> !cp /apps/oracle/oradata/ORCL/college02.dbf /apps/oracle/disk4
+
+SQL>    
+
+::::Step 4::::
+
+SQL> select name from v$datafile;
+
+NAME
+--------------------------------------------------
+/apps/oracle/oradata/ORCL/system01.dbf
+/apps/oracle/oradata/ORCL/sysaux01.dbf
+/apps/oracle/oradata/ORCL/undotbs01.dbf
+/apps/oracle/oradata/ORCL/users01.dbf
+/apps/oracle/oradata/ORCL/example01.dbf
+/apps/oracle/oradata/ORCL/college01.dbf
+/apps/oracle/oradata/ORCL/college02.dbf
+
+7 rows selected.
+
+SQL> 
+
+SQL> alter tablespace COLLEGE rename
+  2  datafile '/apps/oracle/oradata/ORCL/college01.dbf'
+  3  to '/apps/oracle/disk3/college01.dbf';
+
+Tablespace altered.
+
+SQL> alter tablespace COLLEGE rename
+  2  datafile '/apps/oracle/oradata/ORCL/college02.dbf'
+  3  to '/apps/oracle/disk4/college02.dbf';
+
+Tablespace altered.
+
+SQL> 
+
+SQL> select name from v$datafile;
+
+NAME
+--------------------------------------------------
+/apps/oracle/oradata/ORCL/system01.dbf
+/apps/oracle/oradata/ORCL/sysaux01.dbf
+/apps/oracle/oradata/ORCL/undotbs01.dbf
+/apps/oracle/oradata/ORCL/users01.dbf
+/apps/oracle/oradata/ORCL/example01.dbf
+/apps/oracle/disk3/college01.dbf
+/apps/oracle/disk4/college02.dbf
+
+7 rows selected.
+
+SQL> 
+
+::::Step 5::::
+
+SQL> alter tablespace college online;
+
+Tablespace altered.
+
+SQL> 
+
+
+::::Case 2::::
+
+::::Step 1::::
+
+SQL> shutdown immediate;
+Database closed.
+Database dismounted.
+ORACLE instance shut down.
+SQL> 
+
+::::Step 2::::
+
+SQL> startup mount;
+ORACLE instance started.
+
+Total System Global Area  784998400 bytes
+Fixed Size		    2217464 bytes
+Variable Size		  587205128 bytes
+Database Buffers	  188743680 bytes
+Redo Buffers		    6832128 bytes
+Database mounted.
+SQL> 
+
+::::Step 3::::
+
+SQL> !cp /apps/oracle/oradata/ORCL/system01.dbf /apps/oracle/disk5 
+
+SQL> select name from v$datafile;
+
+NAME
+--------------------------------------------------
+/apps/oracle/oradata/ORCL/system01.dbf
+/apps/oracle/oradata/ORCL/sysaux01.dbf
+/apps/oracle/oradata/ORCL/undotbs01.dbf
+/apps/oracle/oradata/ORCL/users01.dbf
+/apps/oracle/oradata/ORCL/example01.dbf
+/apps/oracle/disk3/college01.dbf
+/apps/oracle/disk4/college02.dbf
+
+7 rows selected.
+
+SQL> 
+
+::::Step 4::::
+
+SQL> alter database rename
+  2  file '/apps/oracle/oradata/ORCL/system01.dbf'
+  3  to '/apps/oracle/disk5/system01.dbf';
+
+Database altered.
+
+SQL> select name from v$datafile;
+
+NAME
+--------------------------------------------------
+/apps/oracle/disk5/system01.dbf
+/apps/oracle/oradata/ORCL/sysaux01.dbf
+/apps/oracle/oradata/ORCL/undotbs01.dbf
+/apps/oracle/oradata/ORCL/users01.dbf
+/apps/oracle/oradata/ORCL/example01.dbf
+/apps/oracle/disk3/college01.dbf
+/apps/oracle/disk4/college02.dbf
+
+7 rows selected.
+
+SQL> 
+
+::::Step 5::::
+
+SQL> alter database open;
+
+Database altered.
+
+SQL> 
+
+:::::::: END ::::::::
+
