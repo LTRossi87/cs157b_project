@@ -12,18 +12,28 @@ global $selectStringProd;
 global $selectStringTime;
 global $selectStringFull;
 global $query;
+global $header;
 
 //if 1 dimension is not selected then that there is extra ,
 if(!empty($storeAttr)) {
    $selectStringStore = $storeAttr;
+    foreach($storeAttr as $attr) {
+        $header[] = $attr;
+    }
 }
 
 if(!empty($prodAttr)) { 
    $selectStringProd = $prodAttr;
+    foreach($prodAttr as $attr) {
+        $header[] = $attr;
+    }
 }
 
 if(!empty($timeAttr)) {
    $selectStringTime = $timeAttr;   
+    foreach($timeAttr as $attr) {
+        $header[] = $attr;
+    }
 }
 
 foreach ($selectStringStore as $attributes) {
@@ -90,7 +100,8 @@ $selectStringFull = array($selectStringStore, $selectStringProd, $selectStringTi
     }
     
 //    echo json_encode($json);
-arrayTable($json);
+$header[] = "sum(dollar_sales)";
+arrayTable($header, $json);
 
     mysqli_close();
 
