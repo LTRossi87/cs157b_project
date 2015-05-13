@@ -9,24 +9,31 @@ $timeAttr = $_POST["time"];
 global $selectString;
 global $fromString;
 global $fromWhere;
-
+global $header;
 
 if(!empty($storeAttr)) {
    $selectString[] = $storeAttr;
    $fromString[] = "Store";
    $fromWhere[] = "Sales_Fact.store_key = Store.store_key";
+    
+    $header[] = $storeAttr;
+    
 }
 
 if(!empty($prodAttr)) {
     $selectString[] = $prodAttr;
     $fromString[] = "Product";
     $fromWhere[] = "Sales_Fact.product_key = Product.product_key";
+    
+    $header[] = $prodAttr;
 }
 
 if(!empty($timeAttr)) {
     $selectString[] = $timeAttr;
     $fromString[] = "Time";
     $fromWhere[] = "Sales_Fact.time_key = Time.time_key";
+    
+    $header[] = $timeAttr;
 }
 
 //echo $selectString . "er";
@@ -90,9 +97,14 @@ while($row = mysqli_fetch_assoc($result)) {
     $json[] = $row;
 }
 
-//echo json_encode($json);
-//print_r($json);
-arrayTable($json);
+//get another array for the header and call the 1 function
+//if ($storeAttr )
+//$header[] = $storeAttr;
+//$header[] = $prodAttr;
+//$header[] = $timeAttr;
+$header[] = "sum(dollar_sales)";
+
+arrayTable($header, $json);
 
 
 mysqli_close();
