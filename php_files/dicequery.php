@@ -10,6 +10,7 @@ $timeAttr = $_POST["check_list2"];
 $storeslice;
 $productslice;
 $timeslice;
+$header;
 
 if(!empty($storeAttr)) {
     $storeslice = "(";
@@ -18,6 +19,8 @@ if(!empty($storeAttr)) {
     }
     $storeslice = $storeslice . "`Store`.city = \"" . $storeAttr[sizeof($storeAttr) - 1] . "\"";
     $storeslice = $storeslice . ")";
+    
+    
 }
 
 
@@ -28,6 +31,8 @@ if(!empty($productAttr)) {
     }
     $productslice = $productslice . "`Product`.category = \"" . $productAttr[sizeof($productAttr) - 1] . "\"";
     $productslice = $productslice . ")";
+    
+
 }
 
 if(!empty($timeAttr)) {
@@ -37,6 +42,9 @@ if(!empty($timeAttr)) {
     }
     $timeslice = $timeslice . "`Time`.week_number_in_year = " . $timeAttr[sizeof($timeAttr) - 1];
     $timeslice = $timeslice . ")";
+    
+    
+
 }
 
 $slice;
@@ -82,12 +90,17 @@ if(!empty($slice)) {
 
 //echo $query;
 
+$header[] = "city";
+$header[] = "category";
+$header[] = "week_number_in_year";
+$header[] = "sum(dollar_sales)";
+
 $result = db_query($query);
 while($row = mysqli_fetch_assoc($result)) {
     $json[] = $row;
 }
 //echo json_encode($json);
-arrayTable($json);
+arrayTable($header, $json);
 
 function base_cube() {
 return "SELECT `Store`.city, `Product`.category, `Time`.week_number_in_year, sum(dollar_sales) 
