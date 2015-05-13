@@ -1,10 +1,15 @@
 <?php
 
-function arrayTable($input) {
-    
-//    echo "testing";
+function arrayTable($header, $input) {
+    //print_r($header);
+    //print_r($input);
     
     echo "<table border=1>";
+    foreach($header as $col) {
+        echo('<th>');
+        echo($col);
+        echo('</th>');
+    }
     
     foreach($input as $row) {
       echo('<tr>');
@@ -16,5 +21,5 @@ function arrayTable($input) {
     
     echo "</table>"; 
 }
-
 ?>
+
